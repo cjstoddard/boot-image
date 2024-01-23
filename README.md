@@ -1,6 +1,4 @@
-# boot-image
-
-Make custom boot image
+# Make custom boot image
 
 sudo apt install bzip2 git make gcc libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
 
