@@ -7,7 +7,7 @@ sudo apt install build-essential bzip2 git make gcc libncurses-dev flex bison bc
 # Make directory structure needed for the build
 mkdir boot-image
 cd boot-image
-mkdir -p boot mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
+mkdir -p boot boot/mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
 
 # Download the linux kernel source and compile
 git clone --depth 1 https://github.com/torvalds/linux.git
@@ -21,7 +21,8 @@ cd ..
 git clone --depth 1 https://git.busybox.net/busybox
 cd busybox
 make defconfig
-make -j 8 LDFLAGS=-static
+sed -i '/# CONFIG_STATIC is not set/c\CONFIG_STATIC=y' .config
+make -j 8
 make CONFIG_PREFIX=../boot/initramfs install
 cd ../boot/initramfs
 
