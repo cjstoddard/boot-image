@@ -1,85 +1,10 @@
 # Make custom boot image
 
-sudo apt install bzip2 git make gcc libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
-
-mkdir boot-image
-
-cd boot-image
-
-mkdir boot
-
-mkdir mnt
-
-mkdir boot/initramfs
-
-mkdir -p boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
-
-git clone --depth 1 https://github.com/torvalds/linux.git
-
-cd linux
-
-make menuconfig (check to make sure 64 bit is enabled)
-
-make -j 8
-
-cp arch/x86/boot/bzImage ../boot/
-
-cd ..
-
-git clone --depth 1 https://git.busybox.net/busybox
-
-cd busybox
-
-make menuconfig (Setup > Build Options > Build static)
-
-make -j 8
-
-make CONFIG_PREFIX=../boot/initramfs install
-
-cd ../boot/initramfs
-
-nano init
-
-```
-#!/bin/sh
-mount -t sysfs sysfs /sys
-mount -t proc proc /proc
-mount -t devtmpfs udev /dev
-/bin/sh
-poweroff -f
-```
-chmod 777 init
-
-rm linuxrc
-
-sudo chown -R root:root *
-
-find . | cpio -o -H newc > ../init.cpio
-
-cd ..
-
-nano syslinux.cfg
-
-```
-DEFAULT linux
-LABEL linux
-SAY Now booting
-KERNEL /bzImage
-APPEND initrd=/init.cpio console=ttyS0
-```
-
-dd if=/dev/zero of=boot.img bs=1M count=50
-
-sudo mkfs -t fat boot.img
-
-sudo mount boot.img mnt
-
-sudo cp bzImage init.cpio syslinux.cfg mnt/
-
-sudo chown -R root:root mnt/*
-
-sudo umount mnt
-
-syslinux boot.img
+This is instructions for making a very sinmple bootable Linux image that can be booted using Qemu. This is probably as light a linux ditro as is possible.
+You can either go through the process manually by following the instructions in the step-by-step.txt file or you can run the build-boot.sh shell script to automate the process.
+The boot-666.img.tar.gz is a ready built image using the 6.6.6 Linux kernel.
+Regardless of how you get the image, once you have it, you can boot it with the following command, assuming you have qemu installed.
 
 qemu-system-x86_64 boot.img -nographic
+
+Disclaimer: This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a paticular purpose and nonifringment. In no event shall the author or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
