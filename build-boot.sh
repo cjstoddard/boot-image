@@ -12,7 +12,7 @@ mkdir -p boot boot/mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boo
 # Download the linux kernel source and compile
 git clone --depth 1 https://github.com/torvalds/linux.git
 cd linux
-make oldconfig
+make defconfig
 make -j 8
 cp arch/x86/boot/bzImage ../boot/
 cd ..
