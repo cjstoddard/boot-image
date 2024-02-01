@@ -5,8 +5,6 @@ set -e
 sudo apt install build-essential bzip2 git make gcc libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
 
 # Make directory structure needed for the build
-mkdir boot-image
-cd boot-image
 mkdir -p boot boot/mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
 
 # Download the linux kernel source and compile
