@@ -2,7 +2,7 @@
 set -e
 
 # Install the needed tools
-sudo apt install build-essential bzip2 git make gcc libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
+sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
 
 # Make directory structure needed for the build
 mkdir -p boot boot/mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
