@@ -26,7 +26,7 @@ cd ../boot/initramfs
 
 # make the init file for loading the ram disk
 echo "#!/bin/sh" > init
-echo "mount -t sysfs sysfs /sys" > init
+echo "mount -t sysfs sysfs /sys" >> init
 echo "mount -t proc proc /proc" >> init
 echo "mount -t devtmpfs udev /dev" >> init
 echo "/bin/sh" >> init
