@@ -1,4 +1,6 @@
 #!/bin/sh
+
+# Makes the script stop when it encounters an error
 set -e
 
 # Install the needed tools
