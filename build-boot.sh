@@ -1,13 +1,11 @@
 #!/bin/sh
-
-# Makes the script stop when it encounters an error
 set -e
 
 # Install the needed tools
-sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system
+sudo apt install build-essential bzip2 git make gcc libncurses-dev flex bison bc cpio libelf-dev libssl-dev syslinux dosfstools qemu-system extlinux
 
 # Make directory structure needed for the build
-mkdir -p boot boot/mnt boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
+mkdir -p boot boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
 
 # Download the linux kernel source and compile
 git clone --depth 1 https://github.com/torvalds/linux.git
@@ -42,19 +40,18 @@ find . | cpio -o -H newc > ../init.cpio
 cd ..
 
 # make the syslinux configuration file
-echo "DEFAULT linux" > syslinux.cfg
-echo "LABEL linux" >> syslinux.cfg
-echo "SAY Now booting" >> syslinux.cfg
-echo "KERNEL /bzImage" >> syslinux.cfg
-echo "APPEND initrd=/init.cpio console=ttyS0" >> syslinux.cfg
+echo "DEFAULT linux" > extlinux.conf
+echo "LABEL linux" >> extlinux.conf
+echo "SAY Now booting" >> extlinux.conf
+echo "KERNEL /bzImage" >> extlinux.conf
+echo "APPEND initrd=/init.cpio console=ttyS0" >> extlinux.conf
 
 # build the boot image
-dd if=/dev/zero of=boot.img bs=1M count=50
-sudo mkfs -t fat boot.img
-sudo mount boot.img mnt
-sudo cp bzImage init.cpio syslinux.cfg mnt/
-sudo chown -R root:root mnt/*
-sudo umount mnt
+dd if=/dev/zero of=boot.img bs=1M count=250
+sudo mkfs.ext2 boot.img
+sudo mount boot.img /mnt
+sudo cp bzImage init.cpio extlinux.conf /mnt/
+sudo extlinux --install /mnt
+sudo umount /mnt
 
-# make the boot image bootable
-syslinux boot.img
+echo "Done"
