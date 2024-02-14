@@ -39,7 +39,7 @@ sudo chown -R root:root *
 find . | cpio -o -H newc > ../init.cpio
 cd ..
 
-# make the syslinux configuration file
+# make the extlinux configuration file
 echo "DEFAULT linux" > extlinux.conf
 echo "LABEL linux" >> extlinux.conf
 echo "SAY Now booting" >> extlinux.conf
@@ -49,9 +49,11 @@ echo "APPEND initrd=/init.cpio console=ttyS0" >> extlinux.conf
 # build the boot image
 dd if=/dev/zero of=boot.img bs=1M count=250
 sudo mkfs.ext2 boot.img
-sudo mount boot.img /mnt
-sudo cp bzImage init.cpio extlinux.conf /mnt/
-sudo extlinux --install /mnt
-sudo umount /mnt
+sudo mkdir /mnt/boot
+sudo mount boot.img /mnt/boot
+sudo cp bzImage init.cpio extlinux.conf /mnt/boot/
+sudo extlinux --install /mnt/boot
+sudo umount /mnt/boot
+sudo rmdir /mnt/boot
 
 echo "Done"
