@@ -5,7 +5,7 @@ set -e
 sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev dosfstools qemu-system extlinux
 
 # Make directory structure needed for the build
-mkdir -p boot boot/initramfs boot/initramfs/dev boot/initramfs/proc boot/initramfs/sys
+mkdir -p boot boot/image boot/image/dev boot/image/proc boot/image/sys
 
 # Download the linux kernel source and compile
 git clone --depth 1 https://github.com/torvalds/linux.git
@@ -21,8 +21,8 @@ cd busybox
 make defconfig
 sed -i '/# CONFIG_STATIC is not set/c\CONFIG_STATIC=y' .config
 make -j 8
-make CONFIG_PREFIX=../boot/initramfs install
-cd ../boot/initramfs
+make CONFIG_PREFIX=../boot/image install
+cd ../boot/image
 
 # make the init file for loading the ram disk
 echo "#!/bin/sh" > init
