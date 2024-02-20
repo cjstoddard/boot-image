@@ -2,8 +2,7 @@
 set -e
 
 # Install the needed tools
-sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev dosfstools qemu-system extlinux golang-go
-
+sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev dosfstools qemu-system extlinux
 # Make directory structure needed for the build
 mkdir -p boot boot/image boot/image/dev boot/image/proc boot/image/sys
 
