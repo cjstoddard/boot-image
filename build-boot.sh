@@ -2,8 +2,8 @@
 set -e
 
 # Install the needed tools
-sudo apt install build-essential binutils bzip2 git make libncurses-dev flex \
-bison bc cpio libelf-dev libssl-dev qemu-system grub-pc-bin
+sudo apt install -y build-essential bzip2 git make libncurses-dev flex bison bc \
+cpio libelf-dev libssl-dev qemu-system grub-pc-bin
 
 # Make directory structure needed for the build
 mkdir -p boot boot/image boot/image/dev boot/image/proc boot/image/sys
