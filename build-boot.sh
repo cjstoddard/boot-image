@@ -1,17 +1,18 @@
-#!/bin/sh
+#!/usr/bin/bash
 set -e
 
 # Install the needed tools
-sudo apt install build-essential bzip2 git make libncurses-dev flex bison bc cpio libelf-dev libssl-dev dosfstools qemu-system extlinux
+sudo apt install build-essential binutils bzip2 git make libncurses-dev flex \
+bison bc cpio libelf-dev libssl-dev qemu-system grub-pc-bin
 
 # Make directory structure needed for the build
 mkdir -p boot boot/image boot/image/dev boot/image/proc boot/image/sys
 
 # Download the linux kernel source and compile
-git clone --depth 1 https://github.com/torvalds/linux.git
+git clone --depth 1 https://github.com/torvalds/linux
+cp x.config linux/.config
 cd linux
-make defconfig
-make -j 8
+make -j${nproc}
 cp arch/x86/boot/bzImage ../boot/
 cd ..
 
@@ -20,7 +21,8 @@ git clone --depth 1 https://git.busybox.net/busybox
 cd busybox
 make defconfig
 sed -i '/# CONFIG_STATIC is not set/c\CONFIG_STATIC=y' .config
-make -j 8
+sed -i '/CONFIG_TC=y/c\CONFIG_TC=n' .config
+make -j$(nproc)
 make CONFIG_PREFIX=../boot/image install
 cd ../boot/image
 
@@ -39,21 +41,27 @@ sudo chown -R root:root *
 find . | cpio -o -H newc > ../init.cpio
 cd ..
 
-# make the extlinux configuration file
-echo "DEFAULT linux" > extlinux.conf
-echo "LABEL linux" >> extlinux.conf
-echo "SAY Now booting" >> extlinux.conf
-echo "KERNEL /bzImage" >> extlinux.conf
-echo "APPEND initrd=/init.cpio console=ttyS0" >> extlinux.conf
-
-# build the boot image
+# Build the boot disk image
 dd if=/dev/zero of=boot.img bs=1M count=250
-sudo mkfs.ext2 boot.img
+echo 'start=2048, size=509952, type=83, bootable' | sudo sfdisk boot.img
+sudo losetup /dev/loop0 boot.img
+sudo losetup /dev/loop1 boot.img -o 1M
+sudo mkfs.ext4 /dev/loop1
 sudo mkdir /mnt/boot
-sudo mount boot.img /mnt/boot
-sudo cp bzImage init.cpio extlinux.conf /mnt/boot/
-sudo extlinux --install /mnt/boot
-sudo umount /mnt/boot
+sudo mount /dev/loop1 /mnt/boot
+sudo cp bzImage init.cpio /mnt/boot
+sudo grub-install --target=i386-pc --root-directory=/mnt/boot --no-floppy --modules="normal part_msdos ext2 multiboot" /dev/loop0
+echo "menuentry 'Linux' {" > grub.cfg
+echo "        set root='(hd0,1)'" >> grub.cfg
+echo "        linux /bzImage" >> grub.cfg
+echo "        initrd /init.cpio" >> grub.cfg
+echo "}" >> grub.cfg
+sudo cp grub.cfg /mnt/boot/boot/grub/grub.cfg
+
+# Clean up
+sudo umount /dev/loop1
+sudo losetup -d /dev/loop1
+sudo losetup -d /dev/loop0
 sudo rmdir /mnt/boot
 
 echo "Done"
