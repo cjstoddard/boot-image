@@ -18,4 +18,7 @@ Switched from formatting the boot image as EXT2 to EXT4 and switch from using ex
 
 https://maplecircuit.dev/videos/2025-1-25-lfn-make-your-own-distro-from-nothing.html
 
+Update 1-29-2025:
+I went back to using defconfig for the kernel. Using a tiny kernel is neat and all, but at the end of the day, I do want to build an actually functional image. If you want the tiny kernel, I left the x.config file in place, just uncomment the line that copies it into place and comment out the make defconfig line.
+
 Disclaimer: This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a paticular purpose and nonifringment. In no event shall the author or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.

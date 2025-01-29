@@ -10,8 +10,9 @@ mkdir -p boot boot/image boot/image/dev boot/image/proc boot/image/sys
 
 # Download the linux kernel source and compile
 git clone --depth 1 https://github.com/torvalds/linux
-cp x.config linux/.config
+# cp x.config linux/.config
 cd linux
+make defconfig
 make -j${nproc}
 cp arch/x86/boot/bzImage ../boot/
 cd ..
